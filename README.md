@@ -24,6 +24,11 @@ sudo vi /etc/my.cnf
 sudo service mariadb start
 sudo systemctl enable mariadb
 ```
+Open the /etc/my.cnf file to check for the port for mysql database
+
+Check for the status of the mariadb with the bellow command
+
+'sudo service mariadb status'
 
 2. Configure firewall for Database
 
@@ -31,6 +36,9 @@ sudo systemctl enable mariadb
 sudo firewall-cmd --permanent --zone=public --add-port=3306/tcp
 sudo firewall-cmd --reload
 ```
+You can check the firewall rules with the following command
+
+'sudo firewall-cmd --list-all'
 
 3. Configure Database
 
@@ -46,7 +54,8 @@ MariaDB > FLUSH PRIVILEGES;
 
 4. Load Product Inventory Information to database
 
-Create the db-load-script.sql
+Create the db-load-script.sql, this script is availalble in the asset 
+directory on this github repo
 
 ```
 cat > db-load-script.sql <<-EOF
@@ -58,13 +67,22 @@ INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("D
 EOF
 ```
 
-Run sql script
+Run sql script, this will feed in this particular script
 
 ```
 
 mysql < db-load-script.sql
 ```
+Log into mysql to validate if the data is in there
 
+```
+sudo mysql
+show databases;
+use ecomdb;
+select * from products;
+```
+
+The **use ecomdb** is used to change to the database ecomdb while the **products** is the name of our table
 
 ## Deploy and Configure Web
 
@@ -78,7 +96,7 @@ sudo firewall-cmd --reload
 
 2. Configure httpd
 
-Change `DirectoryIndex index.html` to `DirectoryIndex index.php` to make the php page the default page
+Change `DirectoryIndex index.html` to `DirectoryIndex index.php` to make the php page the default page. This can be done by opening the /etc/httpd/conf/httpd.conf file, otherwise the application will display the content of a html file instead of php file
 
 ```
 sudo sed -i 's/index.html/index.php/g' /etc/httpd/conf/httpd.conf
@@ -89,6 +107,7 @@ sudo sed -i 's/index.html/index.php/g' /etc/httpd/conf/httpd.conf
 ```
 sudo service httpd start
 sudo systemctl enable httpd
+sudo service httpd status
 ```
 
 4. Download code
